@@ -1,27 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import RegistrationPopup, { type RegistrationTarget } from "@/components/RegistrationPopup";
 
 export default function Hero() {
-	const [isRegistrationPopupOpen, setIsRegistrationPopupOpen] = useState(false);
-
-	useEffect(() => {
-		if (!isRegistrationPopupOpen) {
-			return;
-		}
-
-		function handleEscKey(event: KeyboardEvent) {
-			if (event.key === "Escape") {
-				setIsRegistrationPopupOpen(false);
-			}
-		}
-
-		window.addEventListener("keydown", handleEscKey);
-
-		return () => {
-			window.removeEventListener("keydown", handleEscKey);
-		};
-	}, [isRegistrationPopupOpen]);
+	const [registrationTarget, setRegistrationTarget] = useState<RegistrationTarget | null>(null);
 
 	return (
 		<>
@@ -60,7 +43,12 @@ export default function Hero() {
 					<div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
 						<button
 							type="button"
-							onClick={() => setIsRegistrationPopupOpen(true)}
+							onClick={() =>
+								setRegistrationTarget({
+									href: "/register/business",
+									label: "placeholder-business-link",
+								})
+							}
 							className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl border border-brand-cyan/30 bg-brand-surface px-8 py-4 text-base font-bold text-white transition-all duration-300 hover:border-brand-cyan hover:bg-brand-dark hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] sm:w-auto"
 						>
 							<span className="relative z-10 flex items-center gap-2">
@@ -84,7 +72,12 @@ export default function Hero() {
 
 						<button
 							type="button"
-							onClick={() => setIsRegistrationPopupOpen(true)}
+							onClick={() =>
+								setRegistrationTarget({
+									href: "/register/creator",
+									label: "placeholder-creator-link",
+								})
+							}
 							className="group relative inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-brand-purple to-brand-pink px-8 py-4 text-base font-bold text-white shadow-[0_0_20px_rgba(176,38,255,0.3)] transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,0,60,0.5)] active:scale-95 sm:w-auto"
 						>
 							<span className="relative z-10 flex items-center gap-2">
@@ -108,35 +101,10 @@ export default function Hero() {
 				</div>
 			</section>
 
-			{isRegistrationPopupOpen ? (
-				<div
-					className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4"
-					onClick={() => setIsRegistrationPopupOpen(false)}
-				>
-					<div
-						role="dialog"
-						aria-modal="true"
-						className="relative w-full max-w-md rounded-2xl border border-white/10 bg-brand-surface/95 p-6 shadow-[0_20px_70px_rgba(0,0,0,0.7)] backdrop-blur-xl"
-						onClick={(event) => event.stopPropagation()}
-					>
-						<button
-							type="button"
-							onClick={() => setIsRegistrationPopupOpen(false)}
-							className="absolute top-3 right-3 rounded-lg px-2 py-1 text-brand-light/70 transition-colors hover:text-white"
-							aria-label="Close popup"
-						>
-							×
-						</button>
-						<p className="text-lg font-semibold text-white">Continue your registration here</p>
-						<a
-							href="#"
-							className="mt-3 inline-block font-semibold text-brand-cyan underline decoration-brand-cyan/70 underline-offset-4 transition-colors hover:text-brand-purple"
-						>
-							placeholder
-						</a>
-					</div>
-				</div>
-			) : null}
+			<RegistrationPopup
+				target={registrationTarget}
+				onClose={() => setRegistrationTarget(null)}
+			/>
 		</>
 	);
 }

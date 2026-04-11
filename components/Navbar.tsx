@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import RegistrationPopup, { type RegistrationTarget } from "@/components/RegistrationPopup";
 
 export default function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const [registrationTarget, setRegistrationTarget] = useState<RegistrationTarget | null>(null);
 
 	return (
-		<nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-brand-dark/80 backdrop-blur-lg transition-all duration-300">
+		<>
+			<nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-brand-dark/80 backdrop-blur-lg transition-all duration-300">
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="flex h-20 items-center justify-between">
 					<Link
@@ -63,19 +66,39 @@ export default function Navbar() {
 
 							<div className="invisible absolute top-full left-0 mt-2 w-56 translate-y-2 overflow-hidden rounded-xl border border-white/10 bg-brand-surface opacity-0 shadow-[0_10px_40px_rgba(0,0,0,0.8)] transition-all duration-300 origin-top group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
 								<div className="flex flex-col py-2">
-									<Link href="#" className="group/item flex flex-col px-4 py-3 transition-colors hover:bg-brand-dark">
+									<a
+										href="/register/creator"
+										onClick={(event) => {
+											event.preventDefault();
+											setRegistrationTarget({
+												href: "/register/creator",
+												label: "placeholder-creator-link",
+											});
+										}}
+										className="group/item flex flex-col px-4 py-3 transition-colors hover:bg-brand-dark"
+									>
 										<span className="text-sm font-bold text-white transition-colors group-hover/item:text-brand-cyan">
 											Apply as Creator
 										</span>
 										<span className="mt-0.5 text-xs text-brand-light/70">Jadi micro-influencer kami</span>
-									</Link>
+									</a>
 									<div className="mx-4 h-px bg-white/5" />
-									<Link href="#" className="group/item flex flex-col px-4 py-3 transition-colors hover:bg-brand-dark">
+									<a
+										href="/register/business"
+										onClick={(event) => {
+											event.preventDefault();
+											setRegistrationTarget({
+												href: "/register/business",
+												label: "placeholder-business-link",
+											});
+										}}
+										className="group/item flex flex-col px-4 py-3 transition-colors hover:bg-brand-dark"
+									>
 										<span className="text-sm font-bold text-white transition-colors group-hover/item:text-brand-purple">
 											Apply for Business
 										</span>
 										<span className="mt-0.5 text-xs text-brand-light/70">Dapatkan exposure maksimal</span>
-									</Link>
+									</a>
 								</div>
 							</div>
 						</div>
@@ -132,18 +155,32 @@ export default function Navbar() {
 						<p className="mb-3 px-4 text-xs font-bold tracking-widest text-brand-light/40 uppercase">
 							Apply Now
 						</p>
-						<Link
-							href="#"
+						<a
+							href="/register/creator"
+							onClick={(event) => {
+								event.preventDefault();
+								setRegistrationTarget({
+									href: "/register/creator",
+									label: "placeholder-creator-link",
+								});
+							}}
 							className="ml-1 block rounded-r-xl border-l-2 border-transparent px-4 py-3 pl-3 text-sm font-medium text-brand-light transition-all hover:border-brand-cyan hover:bg-brand-dark hover:text-brand-cyan"
 						>
 							As Content Creator
-						</Link>
-						<Link
-							href="#"
+						</a>
+						<a
+							href="/register/business"
+							onClick={(event) => {
+								event.preventDefault();
+								setRegistrationTarget({
+									href: "/register/business",
+									label: "placeholder-business-link",
+								});
+							}}
 							className="mt-1 ml-1 block rounded-r-xl border-l-2 border-transparent px-4 py-3 pl-3 text-sm font-medium text-brand-light transition-all hover:border-brand-purple hover:bg-brand-dark hover:text-brand-purple"
 						>
 							For Business (UMKM)
-						</Link>
+						</a>
 					</div>
 
 					<div className="mt-6 border-t border-white/10 pt-4">
@@ -156,6 +193,12 @@ export default function Navbar() {
 					</div>
 				</div>
 			</div>
-		</nav>
+			</nav>
+
+			<RegistrationPopup
+				target={registrationTarget}
+				onClose={() => setRegistrationTarget(null)}
+			/>
+		</>
 	);
 }
