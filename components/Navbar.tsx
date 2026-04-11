@@ -110,6 +110,14 @@ export default function Navbar() {
 							<span className="relative z-10">Contact Us</span>
 							<div className="absolute inset-0 h-full w-full bg-gradient-to-r from-brand-cyan/20 to-brand-purple/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
 						</Link>
+
+						<Link
+							href="/login"
+							className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-white/10 bg-brand-surface px-6 py-2.5 text-sm font-bold text-white transition-all duration-300 hover:border-brand-pink/50 hover:bg-brand-dark hover:shadow-[0_0_20px_rgba(240,0,0,0.3)]"
+						>
+							<span className="relative z-10">Login</span>
+							<div className="absolute inset-0 h-full w-full bg-gradient-to-r from-brand-pink/20 to-brand-purple/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+						</Link>
 					</div>
 
 					<div className="flex items-center md:hidden">
@@ -184,6 +192,12 @@ export default function Navbar() {
 					</div>
 
 					<div className="mt-6 border-t border-white/10 pt-4">
+						<Link
+							href="/login"
+							className="mb-2 block w-full rounded-xl border border-white/10 px-4 py-3 text-center text-base font-semibold text-brand-light transition-all hover:border-brand-cyan hover:text-brand-cyan"
+						>
+							Login
+						</Link>
 						<Link
 							href="/contact"
 							className="block w-full rounded-xl bg-gradient-to-r from-brand-cyan to-brand-purple px-4 py-3.5 text-center text-base font-bold text-white shadow-[0_0_15px_rgba(176,38,255,0.3)] transition-transform active:scale-95"

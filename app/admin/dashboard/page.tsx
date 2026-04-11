@@ -3,6 +3,15 @@
 import { FormEvent, useState } from "react";
 
 type UserType = "Business" | "Content Creator";
+type RegisterResponse = {
+  ok: boolean;
+  error?: string;
+  user?: {
+    username: string;
+    email: string;
+    type: UserType;
+  };
+};
 
 export default function AdminDashboardPage() {
   const [username, setUsername] = useState("");
@@ -10,17 +19,47 @@ export default function AdminDashboardPage() {
   const [userType, setUserType] = useState<UserType>("Business");
   const [password, setPassword] = useState("");
   const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setNotice("");
+    setError("");
+    setIsSubmitting(true);
 
-    // Placeholder behavior for preparation stage (no database yet).
-    setNotice(`User ${username} prepared as ${userType}.`);
+    try {
+      const response = await fetch("/api/admin/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          type: userType,
+          password,
+        }),
+      });
 
-    setUsername("");
-    setEmail("");
-    setUserType("Business");
-    setPassword("");
+      const data = (await response.json()) as RegisterResponse;
+
+      if (!response.ok || !data.ok) {
+        setError(data.error ?? "Failed to register user.");
+        return;
+      }
+
+      setNotice(`User ${data.user?.username ?? username} registered as ${userType}.`);
+
+      setUsername("");
+      setEmail("");
+      setUserType("Business");
+      setPassword("");
+    } catch {
+      setError("Unexpected error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -110,11 +149,18 @@ export default function AdminDashboardPage() {
             </p>
           ) : null}
 
+          {error ? (
+            <p className="rounded-xl border border-brand-pink/40 bg-brand-pink/10 px-3 py-2 text-sm text-brand-pink">
+              {error}
+            </p>
+          ) : null}
+
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full rounded-xl bg-gradient-to-r from-brand-cyan to-brand-purple py-3.5 text-base font-semibold text-brand-dark shadow-[0_10px_30px_rgba(0,240,255,0.22)] transition-all hover:brightness-110 active:scale-[0.99]"
           >
-            Register User
+            {isSubmitting ? "Registering..." : "Register User"}
           </button>
         </form>
       </div>
