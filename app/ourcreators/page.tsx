@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "@/components/Navbar";
 
 type CreatorCard = {
@@ -86,9 +86,24 @@ function BlankProfile() {
 
 export default function CreatorPage() {
 	const [visibleIds, setVisibleIds] = useState<string[]>([]);
-	const creatorIds = useMemo(() => creators.map((creator) => creator.id), []);
+	const cardRefs = useRef(new Map<string, HTMLElement>());
+
+	function setCardRef(id: string, node: HTMLElement | null) {
+		if (node) {
+			cardRefs.current.set(id, node);
+		} else {
+			cardRefs.current.delete(id);
+		}
+	}
 
 	useEffect(() => {
+		if (typeof window === "undefined") return;
+
+		if (!("IntersectionObserver" in window)) {
+			setVisibleIds(creators.map((creator) => creator.id));
+			return;
+		}
+
 		const observer = new IntersectionObserver(
 			(entries) => {
 				setVisibleIds((prev) => {
@@ -97,6 +112,7 @@ export default function CreatorPage() {
 						const cardId = (entry.target as HTMLElement).dataset.cardId;
 						if (entry.isIntersecting && cardId) {
 							set.add(cardId);
+							observer.unobserve(entry.target);
 						}
 					}
 					return Array.from(set);
@@ -105,20 +121,19 @@ export default function CreatorPage() {
 			{ threshold: 0.24, rootMargin: "0px 0px -8% 0px" }
 		);
 
-		for (const cardId of creatorIds) {
-			const target = document.querySelector(`[data-card-id="${cardId}"]`);
-			if (target) observer.observe(target);
+		for (const target of cardRefs.current.values()) {
+			observer.observe(target);
 		}
 
 		return () => observer.disconnect();
-	}, [creatorIds]);
+	}, []);
 
 	return (
 		<>
 			<Navbar />
 			<main className="relative min-h-screen overflow-hidden bg-brand-dark px-4 pb-12 pt-28 text-brand-light sm:px-8 sm:pt-32">
-				<div className="pointer-events-none absolute left-0 top-10 h-80 w-80 rounded-full bg-brand-cyan/10 blur-[140px]" />
-				<div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-brand-purple/15 blur-[140px]" />
+				<div className="pointer-events-none absolute left-0 top-10 h-80 w-80 rounded-full bg-brand-cyan/10 blur-[90px] sm:blur-[140px]" />
+				<div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-brand-purple/15 blur-[90px] sm:blur-[140px]" />
 
 				<section className="relative mx-auto w-full max-w-7xl">
 				<header className="mb-8 rounded-2xl border border-white/10 bg-brand-surface/70 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
@@ -142,12 +157,13 @@ export default function CreatorPage() {
 							<button
 								type="button"
 								key={creator.id}
+								ref={(node) => setCardRef(creator.id, node)}
 								data-card-id={creator.id}
 								className={`group relative overflow-hidden rounded-[28px] border border-white/10 bg-brand-surface/80 text-left shadow-[0_16px_35px_rgba(2,6,23,0.35)] transition-all duration-500 ${creator.className} ${
 									isVisible
 										? "translate-y-0 scale-100 opacity-100"
 										: "translate-y-8 scale-[0.98] opacity-0"
-								} hover:-translate-y-1 hover:border-brand-cyan/40 hover:shadow-[0_24px_60px_rgba(0,240,255,0.18)] active:translate-y-0 active:scale-[0.985] active:shadow-[0_22px_65px_rgba(176,38,255,0.35)]`}
+								} motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:opacity-100 motion-reduce:transition-none hover:-translate-y-1 hover:border-brand-cyan/40 hover:shadow-[0_24px_60px_rgba(0,240,255,0.18)] active:translate-y-0 active:scale-[0.985] active:shadow-[0_22px_65px_rgba(176,38,255,0.35)]`}
 								style={{ transitionDelay: `${index * 70}ms` }}
 							>
 								<div className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${creator.accent}`} />

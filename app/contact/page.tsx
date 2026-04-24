@@ -6,8 +6,8 @@ export default function ContactPage() {
       <Navbar />
 
       <section className="relative min-h-screen overflow-hidden py-24">
-        <div className="absolute top-0 right-0 h-96 w-96 animate-pulse rounded-full bg-brand-purple/20 opacity-60 mix-blend-screen blur-[130px]" />
-        <div className="absolute bottom-10 left-10 h-80 w-80 scale-150 animate-[pulse_4s_ease-in-out_infinite] rounded-full bg-brand-cyan/10 opacity-70 mix-blend-screen blur-[150px]" />
+        <div className="absolute top-0 right-0 h-96 w-96 animate-pulse rounded-full bg-brand-purple/20 opacity-60 mix-blend-screen blur-[90px] sm:blur-[130px]" />
+        <div className="absolute bottom-10 left-10 h-80 w-80 scale-150 animate-[pulse_4s_ease-in-out_infinite] rounded-full bg-brand-cyan/10 opacity-70 mix-blend-screen blur-[95px] sm:blur-[150px]" />
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-16 max-w-3xl text-center">

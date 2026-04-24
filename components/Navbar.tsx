@@ -7,6 +7,7 @@ import RegistrationPopup, { type RegistrationTarget } from "@/components/Registr
 export default function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [registrationTarget, setRegistrationTarget] = useState<RegistrationTarget | null>(null);
+	const creatorsHref = "/ourcreators";
 
 	return (
 		<>
@@ -34,7 +35,7 @@ export default function Navbar() {
 
 					<div className="hidden items-center space-x-8 md:flex">
 						<Link
-							href="/ourcreators"
+							href={creatorsHref}
 							className="text-sm font-medium text-brand-light transition-all duration-300 hover:text-brand-cyan hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]"
 						>
 							Creators
@@ -147,13 +148,15 @@ export default function Navbar() {
 			>
 				<div className="space-y-2 px-4 pt-4 pb-6">
 					<Link
-						href="#"
+						href={creatorsHref}
+						onClick={() => setIsMenuOpen(false)}
 						className="block rounded-xl px-4 py-3 text-base font-semibold text-brand-light transition-all hover:bg-brand-dark hover:text-brand-cyan"
 					>
 						Creators
 					</Link>
 					<Link
 						href="/#about-us"
+						onClick={() => setIsMenuOpen(false)}
 						className="block rounded-xl px-4 py-3 text-base font-semibold text-brand-light transition-all hover:bg-brand-dark hover:text-brand-purple"
 					>
 						About Us
@@ -194,12 +197,14 @@ export default function Navbar() {
 					<div className="mt-6 border-t border-white/10 pt-4">
 						<Link
 							href="/login"
+							onClick={() => setIsMenuOpen(false)}
 							className="mb-2 block w-full rounded-xl border border-white/10 px-4 py-3 text-center text-base font-semibold text-brand-light transition-all hover:border-brand-cyan hover:text-brand-cyan"
 						>
 							Login
 						</Link>
 						<Link
 							href="/contact"
+							onClick={() => setIsMenuOpen(false)}
 							className="block w-full rounded-xl bg-gradient-to-r from-brand-cyan to-brand-purple px-4 py-3.5 text-center text-base font-bold text-white shadow-[0_0_15px_rgba(176,38,255,0.3)] transition-transform active:scale-95"
 						>
 							Contact Us
