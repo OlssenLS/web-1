@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { LogoutButton } from "./logout-button";
+import { CommissionQueue } from "./commission-queue";
 
 type SessionPayload = {
   username: string;
@@ -82,41 +83,35 @@ export default async function CreatorDashboardPage() {
 
         <section className="rounded-2xl border border-white/10 bg-brand-surface/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
           <h2 className="text-xl font-semibold">Current Commission Queue</h2>
-          <div className="mt-4 space-y-3">
-            {[
-              {
-                brand: "LocalBite",
-                task: "1x TikTok Review + 1x Story",
-                due: "Due in 2 days",
-                status: "In Progress",
-              },
-              {
-                brand: "KopiKenangan",
-                task: "UGC Product Reel",
-                due: "Due in 4 days",
-                status: "Script Review",
-              },
-              {
-                brand: "Majoo",
-                task: "YouTube Shorts Mention",
-                due: "Due in 6 days",
-                status: "Ready to Submit",
-              },
-            ].map((item) => (
-              <article
-                key={item.brand}
-                className="flex flex-col gap-3 rounded-xl border border-white/10 bg-brand-dark/70 p-4 md:flex-row md:items-center md:justify-between"
-              >
-                <div>
-                  <p className="text-lg font-semibold">{item.brand}</p>
-                  <p className="text-sm text-brand-light/70">{item.task}</p>
-                </div>
-                <div className="md:text-right">
-                  <p className="text-sm text-brand-light/70">{item.due}</p>
-                  <p className="text-sm font-semibold text-brand-cyan">{item.status}</p>
-                </div>
-              </article>
-            ))}
+          <div className="mt-4">
+            <CommissionQueue
+              items={[
+                {
+                  id: "1",
+                  brand: "LocalBite",
+                  task: "1x TikTok Review + 1x Story",
+                  due: "Due in 2 days",
+                  status: "In Progress",
+                  progress: 65,
+                },
+                {
+                  id: "2",
+                  brand: "KopiKenangan",
+                  task: "UGC Product Reel",
+                  due: "Due in 4 days",
+                  status: "Script Review",
+                  progress: 30,
+                },
+                {
+                  id: "3",
+                  brand: "Majoo",
+                  task: "YouTube Shorts Mention",
+                  due: "Due in 6 days",
+                  status: "Ready to Submit",
+                  progress: 90,
+                },
+              ]}
+            />
           </div>
         </section>
       </section>
