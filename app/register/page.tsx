@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -11,7 +11,7 @@ type RegisterResponse = {
   type?: AccountType;
 };
 
-export default function UserRegisterPage() {
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [username, setUsername] = useState("");
@@ -249,5 +249,13 @@ export default function UserRegisterPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function UserRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-brand-dark" />}>
+      <RegisterForm />
+    </Suspense>
   );
 }

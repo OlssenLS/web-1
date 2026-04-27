@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -11,7 +11,7 @@ type LoginResponse = {
   type?: AccountType;
 };
 
-export default function UserLoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [identity, setIdentity] = useState("");
@@ -211,5 +211,13 @@ export default function UserLoginPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function UserLoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-brand-dark" />}>
+      <LoginForm />
+    </Suspense>
   );
 }
