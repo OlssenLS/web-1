@@ -54,6 +54,7 @@ export default function AdminDashboardClient({
   const [isOverviewLoading, setIsOverviewLoading] = useState(false);
   const [overviewError, setOverviewError] = useState(initialOverviewError);
   const [overview, setOverview] = useState<AdminOverviewData | null>(initialOverview);
+  const [deletingUser, setDeletingUser] = useState<string | null>(null);
 
   // Refresh dashboard stats
   async function loadOverview() {
@@ -77,6 +78,34 @@ export default function AdminDashboardClient({
       setOverviewError("Unable to load dashboard data.");
     } finally {
       setIsOverviewLoading(false);
+    }
+  }
+
+  // Delete user
+  async function handleDeleteUser(username: string) {
+    if (!confirm(`Are you sure you want to delete user "${username}"?`)) {
+      return;
+    }
+
+    setDeletingUser(username);
+    try {
+      const response = await fetch("/api/admin/users/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
+      });
+
+      if (response.ok) {
+        setNotice(`User "${username}" deleted successfully.`);
+        await loadOverview();
+      } else {
+        const data = await response.json();
+        setError(data.error ?? "Failed to delete user.");
+      }
+    } catch {
+      setError("Unexpected error. Please try again.");
+    } finally {
+      setDeletingUser(null);
     }
   }
 
@@ -194,22 +223,53 @@ export default function AdminDashboardClient({
                     key={`${user.email}-${user.createdAt}`}
                     className="rounded-xl border border-white/10 bg-brand-dark/60 p-4"
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="min-w-0 break-words font-semibold text-white">{user.username}</p>
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          user.type === "Business"
-                            ? "bg-brand-cyan/15 text-brand-cyan"
-                            : "bg-brand-purple/15 text-brand-purple"
-                        }`}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="min-w-0 break-words font-semibold text-white">{user.username}</p>
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-semibold shrink-0 ${
+                              user.type === "Business"
+                                ? "bg-brand-cyan/15 text-brand-cyan"
+                                : "bg-brand-purple/15 text-brand-purple"
+                            }`}
+                          >
+                            {user.type}
+                          </span>
+                        </div>
+                        <p className="mt-1 break-words text-sm text-brand-light/70">{user.email}</p>
+                        <p className="mt-1 text-xs text-brand-light/50">
+                          {new Date(user.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteUser(user.username)}
+                        disabled={deletingUser === user.username}
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-white/5 text-brand-light/70 transition-colors hover:border-brand-pink/50 hover:bg-brand-pink/10 hover:text-brand-pink disabled:opacity-50"
+                        aria-label={`Delete ${user.username}`}
                       >
-                        {user.type}
-                      </span>
+                        {deletingUser === user.username ? (
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-pink border-t-transparent" />
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                          </svg>
+                        )}
+                      </button>
                     </div>
-                    <p className="mt-1 break-words text-sm text-brand-light/70">{user.email}</p>
-                    <p className="mt-1 text-xs text-brand-light/50">
-                      {new Date(user.createdAt).toLocaleString()}
-                    </p>
                   </div>
                 ))}
               </div>

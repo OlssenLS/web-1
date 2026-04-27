@@ -5,56 +5,70 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 type AccountType = "Business" | "Content Creator";
-type LoginResponse = {
+type RegisterResponse = {
   ok: boolean;
   error?: string;
   type?: AccountType;
 };
 
-export default function UserLoginPage() {
+export default function UserRegisterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [identity, setIdentity] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [type, setType] = useState<AccountType>("Business");
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (searchParams.get("registered") === "true") {
-      setSuccessMessage("Account created successfully! Please login.");
-      // Clear the URL parameter
-      router.replace("/login");
+    const typeParam = searchParams.get("type");
+    if (typeParam === "Business" || typeParam === "Content Creator") {
+      setType(typeParam);
     }
-  }, [searchParams, router]);
+  }, [searchParams]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+
+    // Validation
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    if (!username || !email) {
+      setError("All fields are required");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ identity, password, type }),
+        body: JSON.stringify({ username, email, password, type }),
       });
 
-      const data = (await response.json()) as LoginResponse;
+      const data = (await response.json()) as RegisterResponse;
 
-      if (!response.ok || !data.ok || !data.type) {
-        setError(data.error ?? "Unable to login.");
+      if (!response.ok || !data.ok) {
+        setError(data.error ?? "Unable to register.");
         return;
       }
 
-      if (data.type === "Business") {
-        router.push("/business/dashboard");
-      } else {
-        router.push("/creator/dashboard");
-      }
+      // Redirect to login page after successful registration
+      router.push("/login?registered=true");
     } catch {
       setError("Unexpected error. Please try again.");
     } finally {
@@ -87,14 +101,14 @@ export default function UserLoginPage() {
           <div className="relative space-y-7">
             <div>
               <p className="text-xs font-semibold tracking-[0.24em] text-brand-cyan/80 uppercase">
-                Member Access
+                Create Account
               </p>
               <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight md:text-5xl">
-                Scale your collaboration impact.
+                Join the collaboration platform.
               </h1>
               <p className="mt-4 max-w-md text-brand-light/70">
-                One login gateway for vetted Business partners and Content Creators.
-                Manage campaign workflows faster with role-based dashboards.
+                Create your account to start collaborating with businesses or creators.
+                Manage campaigns and commissions in one place.
               </p>
             </div>
 
@@ -111,12 +125,12 @@ export default function UserLoginPage() {
           </div>
         </aside>
 
-        {/* Right panel - login form */}
+        {/* Right panel - register form */}
         <div className="p-8 sm:p-10 lg:p-14 xl:p-16 lg:py-20 xl:py-20">
           <div className="mb-8">
-            <h2 className="text-3xl font-bold tracking-tight">Login</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Register</h2>
             <p className="mt-2 text-sm leading-relaxed text-brand-light/65">
-              Use your approved account credentials to continue.
+              Create your account to get started.
             </p>
           </div>
 
@@ -152,17 +166,32 @@ export default function UserLoginPage() {
             </div>
 
             <div>
-              <label htmlFor="identity" className="mb-2 block text-sm font-medium text-brand-light/85">
-                Email or Username
+              <label htmlFor="username" className="mb-2 block text-sm font-medium text-brand-light/85">
+                Username
               </label>
               <input
-                id="identity"
+                id="username"
                 type="text"
                 required
-                value={identity}
-                onChange={(event) => setIdentity(event.target.value)}
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
                 className="w-full rounded-xl border border-white/12 bg-brand-dark/80 px-4 py-3 text-brand-light placeholder-brand-light/30 focus:border-brand-cyan focus:outline-none"
-                placeholder="Input email or username"
+                placeholder="Choose a username"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="mb-2 block text-sm font-medium text-brand-light/85">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                className="w-full rounded-xl border border-white/12 bg-brand-dark/80 px-4 py-3 text-brand-light placeholder-brand-light/30 focus:border-brand-cyan focus:outline-none"
+                placeholder="Enter your email"
               />
             </div>
 
@@ -177,7 +206,22 @@ export default function UserLoginPage() {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 className="w-full rounded-xl border border-white/12 bg-brand-dark/80 px-4 py-3 text-brand-light placeholder-brand-light/30 focus:border-brand-cyan focus:outline-none"
-                placeholder="Input password"
+                placeholder="Create a password (min 6 characters)"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-brand-light/85">
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                className="w-full rounded-xl border border-white/12 bg-brand-dark/80 px-4 py-3 text-brand-light placeholder-brand-light/30 focus:border-brand-cyan focus:outline-none"
+                placeholder="Confirm your password"
               />
             </div>
 
@@ -187,24 +231,18 @@ export default function UserLoginPage() {
               </p>
             ) : null}
 
-            {successMessage ? (
-              <p className="rounded-xl border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-500">
-                {successMessage}
-              </p>
-            ) : null}
-
             <button
               type="submit"
               disabled={isLoading}
               className="w-full rounded-xl bg-gradient-to-r from-brand-cyan to-brand-purple py-3.5 text-base font-semibold text-brand-dark shadow-[0_10px_30px_rgba(0,240,255,0.22)] transition-all hover:brightness-110 disabled:opacity-60"
             >
-              {isLoading ? "Signing in..." : "Login"}
+              {isLoading ? "Creating account..." : "Register"}
             </button>
 
             <p className="text-center text-sm text-brand-light/65">
-              Don't have an account?{" "}
-              <Link href="/register" className="font-semibold text-brand-cyan hover:text-brand-cyan/80">
-                Register
+              Already have an account?{" "}
+              <Link href="/login" className="font-semibold text-brand-cyan hover:text-brand-cyan/80">
+                Login
               </Link>
             </p>
           </form>

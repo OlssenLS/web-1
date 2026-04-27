@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import RegistrationPopup, { type RegistrationTarget } from "@/components/RegistrationPopup";
+import Link from "next/link";
 
 export default function Hero() {
-	const [registrationTarget, setRegistrationTarget] = useState<RegistrationTarget | null>(null);
-
 	return (
 		<>
 			<section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden">
@@ -43,14 +40,8 @@ export default function Hero() {
 					</p>
 
 					<div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-						<button
-							type="button"
-							onClick={() =>
-								setRegistrationTarget({
-									href: "/register/business",
-									label: "placeholder-business-link",
-								})
-							}
+						<Link
+							href="/register?type=Business"
 							className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl border border-brand-cyan/30 bg-brand-surface px-8 py-4 text-base font-bold text-white transition-all duration-300 hover:border-brand-cyan hover:bg-brand-dark hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] sm:w-auto"
 						>
 							<span className="relative z-10 flex items-center gap-2">
@@ -70,16 +61,10 @@ export default function Hero() {
 								</svg>
 							</span>
 							<div className="absolute inset-0 h-full w-full bg-gradient-to-r from-brand-cyan/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-						</button>
+						</Link>
 
-						<button
-							type="button"
-							onClick={() =>
-								setRegistrationTarget({
-									href: "/register/creator",
-									label: "placeholder-creator-link",
-								})
-							}
+						<Link
+							href="/register?type=Content Creator"
 							className="group relative inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-brand-purple to-brand-pink px-8 py-4 text-base font-bold text-white shadow-[0_0_20px_rgba(176,38,255,0.3)] transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,0,60,0.5)] active:scale-95 sm:w-auto"
 						>
 							<span className="relative z-10 flex items-center gap-2">
@@ -98,16 +83,10 @@ export default function Hero() {
 									/>
 								</svg>
 							</span>
-						</button>
+						</Link>
 					</div>
 				</div>
 			</section>
-
-			{/* Popup registrasi reusable buat CTA hero */}
-			<RegistrationPopup
-				target={registrationTarget}
-				onClose={() => setRegistrationTarget(null)}
-			/>
 		</>
 	);
 }
